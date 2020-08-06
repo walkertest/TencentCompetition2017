@@ -5,6 +5,7 @@ Created on Thu Jun  1 10:35:19 2017
 """
 import pandas as pd
 import scipy as sp
+from scipy import spatial
 import numpy as np
 import sklearn
 import gc
@@ -30,7 +31,7 @@ if not os.path.exists(sub):
     os.mkdir(sub)
     
 def applyParallel(dfGrouped, func):
-    with Parallel(n_jobs=32) as parallel:
+    with Parallel(n_jobs=4) as parallel:
         retLst = parallel( delayed(func)(pd.Series(value)) for key, value in dfGrouped )
         return pd.concat(retLst, axis=0) 
     
@@ -95,7 +96,7 @@ def get_feature(df):
 
     # sp.spatial.distance.euclidean:计算两个1-D阵列之间的欧氏距离，这里计算两个相邻点的距离
     distance_deltas = pd.Series(
-        [sp.spatial.distance.euclidean(points[i][0], points[i + 1][0]) for i in range(len(points) - 1)])
+        [spatial.distance.euclidean(points[i][0], points[i + 1][0]) for i in range(len(points) - 1)])
     df['distance_deltas_max'] = distance_deltas.max()
     df['distance_deltas_min'] = distance_deltas.min()
     df['distance_deltas_var'] = distance_deltas.var()
@@ -165,7 +166,7 @@ def get_feature(df):
     df['acceleration_diff_var'] = acceleration_diff.var()
 
     # 计算与目标点的距离
-    distance_aim_deltas = pd.Series([sp.spatial.distance.euclidean(points[i][0], aim) for i in range(len(points))])
+    distance_aim_deltas = pd.Series([spatial.distance.euclidean(points[i][0], aim) for i in range(len(points))])
     distance_aim_deltas_diff = distance_aim_deltas.diff(1).dropna()
     if len(distance_aim_deltas) > 0:
         df['aim_distance_last'] = distance_aim_deltas.values[-1]

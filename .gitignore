@@ -1,5 +1,6 @@
 .idea
 get-pip.py
+data/
 data/dsjtzs_txfz_testB.txt
 data/dsjtzs_txfz_test1.txt
 data/dsjtzs_txfz_testB.txt_test
